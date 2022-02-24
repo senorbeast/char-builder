@@ -1,15 +1,37 @@
-# Getting Started with Create React App
+# Char Builder
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+-   Interactive Characters Builder
+-   Drag and Drop Components from the toolbar to create characters, edit them
+
+## Library Options
+
+-   React Konva : Good integration with react, using Konva declaratively
+-   React Pixi : Intergration with react, not good yet. ( But could offer better performance since WebGL)
+-   Pixijs : Faster than Konva, uses WebGL with HTML Canvas Fallback
+-   Konvajs : Only HTML Canvas Available
+-   Web Assembly : Fastest
+
+[Int Canvas](https://developers.google.com/assistant/df-asdk/interactivecanvas/build/web-app)
+[BenchMarks](https://benchmarks.slaylines.io/)
+
+## To run the project
+
+```
+npm install
+npm start
+
+```
+
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+<hr>
 
 ## Available Scripts
 
 In the project directory, you can run:
 
 ### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
