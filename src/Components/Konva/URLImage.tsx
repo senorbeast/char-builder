@@ -1,17 +1,27 @@
+//@ts-nocheck
 import Konva from "konva";
-import React, { useRef, useState, useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Image, Transformer } from "react-konva";
 import useImage from "use-image";
-import { useSel, useShapeRef, useTrRef } from "../ContextStore";
 
 interface URLImageProp {
-    image: any;
-    rkey: number;
+    imageProps: any;
     onSelect: any;
+    isSelected: Boolean; // True if slected
+    onChange: any; // Change Attrs after transfrom
 }
 
-const URLImage = ({ image, rkey, onSelect }: URLImageProp) => {
-    const [img] = useImage(image.src);
+const URLImage = ({
+    imageProps,
+    isSelected,
+    onSelect,
+    onChange,
+}: URLImageProp) => {
+    const [img] = useImage(imageProps.src);
+    let trRef = useRef();
+    let shapeRef = useRef();
+
+    // Fxn for event change
     //@ts-ignore
     const handleDragStart = (e) => {
         e.target.setAttrs({
@@ -33,6 +43,7 @@ const URLImage = ({ image, rkey, onSelect }: URLImageProp) => {
             shadowOffsetX: 5,
             shadowOffsetY: 5,
         });
+        // console.log("ShapeRef", shapeRef);
     };
 
     //@ts-ignore
@@ -44,61 +55,59 @@ const URLImage = ({ image, rkey, onSelect }: URLImageProp) => {
             scaleY: 0,
         });
     };
-    let trRef = useTrRef();
-    let isSelected = useSel();
-    let shapeRef = useShapeRef();
-    // useEffect(() => {
-    //     if (isSelected) {
-    //         // we need to attach transformer manually
-    //         //@ts-ignore
-    //         trRef.current.nodes([shapeRef.current]);
-    //         //@ts-ignore
-    //         trRef.current.getLayer().batchDraw();
-    //     }
-    // }, [isSelected]);
-    // console.log(rkey);
+
+    useEffect(() => {
+        if (isSelected) {
+            // we need to attach transformer manually
+            //@ts-ignore
+            trRef.current.nodes([shapeRef.current]);
+            //@ts-ignore
+            // console.log("shapeRef.current", shapeRef.current); //@ts-ignore
+            trRef.current.getLayer().batchDraw();
+        }
+    }, [isSelected]);
     return (
-        <React.Fragment key={rkey}>
+        <>
             <Image
                 image={img}
-                x={image.x}
-                y={image.y}
-                // onClick={onSelect}
-                // onTap={onSelect}
-                // ref={shapeRef.current}
+                x={imageProps.x}
+                y={imageProps.y}
+                ref={shapeRef}
+                onClick={onSelect}
+                onTap={onSelect}
+                // width={imageProps.width}
+                // height={imageProps.height}
                 // I will use offset to set origin to the center of the image
                 offsetX={img ? img.width / 2 : 0}
                 offsetY={img ? img.height / 2 : 0}
                 draggable
+                // set attrs here
                 scaleX={0.3}
                 scaleY={0.3}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 // onClick={handleClick}
-                // onTransformEnd={(e) => {
-                //     // transformer is changing scale of the node
-                //     // and NOT its width or height
-                //     // but in the store we have only width and height
-                //     // to match the data better we will reset scale on transform end
-                //     //@ts-ignore
-                //     const node = shapeRef.current;
-                //     const scaleX = node.scaleX();
-                //     const scaleY = node.scaleY();
-
-                //     // we will reset it back
-                //     node.scaleX(1);
-                //     node.scaleY(1);
-                //     // onChange({
-                //     //     ...shapeProps,
-                //     //     x: node.x(),
-                //     //     y: node.y(),
-                //     //     // set minimal value
-                //     //     width: Math.max(5, node.width() * scaleX),
-                //     //     height: Math.max(node.height() * scaleY),
-                //     // });
-                // }}
+                onTransformEnd={(e) => {
+                    // transformer is changing scale of the node
+                    // and NOT its width or height
+                    // but in the store we have only width and height
+                    // to match the data better we will reset scale on transform end
+                    //@ts-ignore
+                    const node = shapeRef.current;
+                    const scaleX = node.scaleX();
+                    const scaleY = node.scaleY();
+                    console.log(e);
+                    // we will reset it back
+                    node.scaleX(1);
+                    node.scaleY(1);
+                    onChange({
+                        src: imageProps.src,
+                        x: node.x(),
+                        y: node.y(),
+                    });
+                }}
             />
-            {/* {isSelected && (
+            {isSelected && (
                 <Transformer
                     ref={trRef}
                     boundBoxFunc={(oldBox, newBox) => {
@@ -109,8 +118,8 @@ const URLImage = ({ image, rkey, onSelect }: URLImageProp) => {
                         return newBox;
                     }}
                 />
-            )} */}
-        </React.Fragment>
+            )}
+        </>
     );
 };
 

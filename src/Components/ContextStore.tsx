@@ -4,8 +4,6 @@ import React, { useContext, useState, useRef } from "react";
 // Create Context gives Provider and Consumer
 const StageRefContext = React.createContext(undefined);
 const DragUrlRefContext = React.createContext(undefined);
-const ShapeRefContext = React.createContext(undefined);
-const TrRefContext = React.createContext(undefined);
 
 const ImagesContext = React.createContext(undefined);
 const SetImagesContext = React.createContext((_arg0: boolean): void => {});
@@ -21,13 +19,6 @@ export function useDragUrlRef() {
     return useContext(DragUrlRefContext);
 }
 
-export function useShapeRef() {
-    return useContext(ShapeRefContext);
-}
-
-export function useTrRef() {
-    return useContext(TrRefContext);
-}
 export function useSel() {
     return useContext(SelectedContext);
 }
@@ -43,10 +34,8 @@ export function useSetImages() {
 }
 
 const ContextProvider = ({ children }: any) => {
-    const stageRef = useRef(null);
+    const stageRef = useRef();
     const dragUrl = useRef();
-    const shapeRef = useRef();
-    const trRef = useRef();
 
     const [images, setImages] = useState([]);
     const [selectedId, setselectShape] = useState(null);
@@ -57,6 +46,7 @@ const ContextProvider = ({ children }: any) => {
 
     const setSel = (id) => {
         setselectShape(id);
+        // console.log("Selected Shape", id);
     };
 
     return (
@@ -64,23 +54,15 @@ const ContextProvider = ({ children }: any) => {
             {/*  Providing Created Context */}
             <StageRefContext.Provider value={stageRef}>
                 <DragUrlRefContext.Provider value={dragUrl}>
-                    <ShapeRefContext.Provider value={shapeRef}>
-                        <TrRefContext.Provider value={trRef}>
-                            <ImagesContext.Provider value={images}>
-                                <SetImagesContext.Provider value={setImg}>
-                                    <SelectedContext.Provider
-                                        value={selectedId}
-                                    >
-                                        <SetSelectedContext.Provider
-                                            value={setSel}
-                                        >
-                                            {children}
-                                        </SetSelectedContext.Provider>
-                                    </SelectedContext.Provider>
-                                </SetImagesContext.Provider>
-                            </ImagesContext.Provider>
-                        </TrRefContext.Provider>
-                    </ShapeRefContext.Provider>
+                    <ImagesContext.Provider value={images}>
+                        <SetImagesContext.Provider value={setImg}>
+                            <SelectedContext.Provider value={selectedId}>
+                                <SetSelectedContext.Provider value={setSel}>
+                                    {children}
+                                </SetSelectedContext.Provider>
+                            </SelectedContext.Provider>
+                        </SetImagesContext.Provider>
+                    </ImagesContext.Provider>
                 </DragUrlRefContext.Provider>
             </StageRefContext.Provider>
         </>

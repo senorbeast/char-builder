@@ -2,9 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Stage, Layer, Rect, Text, Circle, Line } from "react-konva";
 import URLImage from "./URLImage";
-import hat from "../images/hat.png";
-import holster from "../images/holster.png";
 import {
+    useSel,
     useSetSel,
     useImages,
     useSetImages,
@@ -16,21 +15,33 @@ import {
 // [] add state to state array
 // [] Render those objects in Konva with URLImage through their id
 // Make each object selectable and add Remove, resize functionality
+// Manipulate attributes with transformer and then setImage with new Attrs
 
 const KonvaStage = () => {
+    //To get selected Shape/Obj/Node
+    let selectedId = useSel();
     let selectShape = useSetSel();
+    // To get Images drag onto Canvas
     let images = useImages();
     let setImages = useSetImages();
+    // Reqd Ref
     let imgID = useRef(0);
     let stageRef = useStageRef();
     let dragUrl = useDragUrlRef();
+
+    const checkDeselect = (e) => {
+        // deselect when clicked on empty area
+        const clickedOnEmpty = e.target === e.target.getStage();
+        if (clickedOnEmpty) {
+            selectShape(null);
+        }
+    };
     useEffect(() => {
-        //
         // adapt the stage on any window resize
         window.addEventListener("resize", fitStageIntoParentContainer);
         fitStageIntoParentContainer();
 
-        console.log(hat, holster);
+        // console.log(hat, holster);
         return () => {
             //cleanup!
             window.removeEventListener("resize", fitStageIntoParentContainer);
@@ -55,7 +66,8 @@ const KonvaStage = () => {
                         },
                     ])
                 );
-                console.table(images);
+                // console.log("StageRef", stageRef);
+                // console.table(images);
                 imgID.current += 1;
             }}
             onDragOver={(e) => e.preventDefault()}
@@ -65,6 +77,8 @@ const KonvaStage = () => {
                 height={window.innerHeight}
                 ref={stageRef}
                 fill="#fff"
+                onMouseDown={checkDeselect}
+                onTouchStart={checkDeselect}
                 // draggible
                 // listening
                 // dragDistance={10}
@@ -74,19 +88,19 @@ const KonvaStage = () => {
                 <Layer>
                     {images.map((image, index) => {
                         return (
-                            // <URLImage image={image} rkey={index + 10} />
                             <URLImage
-                                rkey={index}
-                                image={image}
-                                // isSelected={image.id === selectedId}
-                                // onSelect={() => {
-                                //     selectShape(image.id);
-                                // }}
-                                // onChange={(newAttrs) => {
-                                //     const imgs = images.slice();
-                                //     imgs[i] = newAttrs;
-                                //     setImages(imgs);
-                                // }}
+                                key={index}
+                                imageProps={image}
+                                isSelected={image.id === selectedId}
+                                onSelect={() => {
+                                    // OnSelect set selectedId == image.id
+                                    selectShape(image.id);
+                                }}
+                                onChange={(newAttrs) => {
+                                    const imgs = images.slice();
+                                    imgs[index] = newAttrs;
+                                    setImages(imgs); //Set New Attrs to Transformed Image
+                                }}
                             />
                         );
                     })}
@@ -141,13 +155,6 @@ const KonvaStage = () => {
         //@ts-ignore
         stage.height(window.innerHeight);
     }
-    const checkDeselect = (e) => {
-        // deselect when clicked on empty area
-        const clickedOnEmpty = e.target === e.target.getStage();
-        if (clickedOnEmpty) {
-            selectShape(null);
-        }
-    };
 };
 
 export default KonvaStage;
