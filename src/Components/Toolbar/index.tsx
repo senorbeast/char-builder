@@ -5,6 +5,7 @@ import { indigo } from "@mui/material/colors";
 import Tool from "./Tool";
 import { ReactComponent as Battery } from "../images/battery.svg";
 
+//@ts-ignore
 const Toolbar = () => {
     return (
         <>
@@ -21,9 +22,9 @@ const Toolbar = () => {
                     borderRadius: 1,
                 }}
             >
-                <Tool img={holster} id="holster"></Tool>
-                <Tool img={hat} id="hat"></Tool>
-                <Tool svg={<Battery />} id="battery"></Tool>
+                <Tool imgv={holster} id="holster"></Tool>
+                <Tool imgv={hat} id="hat"></Tool>
+                {/* <Tool svg={<Battery />} id="battery"></Tool> */}
             </Box>
         </>
     );

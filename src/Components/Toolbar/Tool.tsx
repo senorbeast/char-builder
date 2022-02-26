@@ -1,7 +1,8 @@
 import { Paper } from "@mui/material";
-
+import { useEffect, useRef } from "react";
+import { useDragUrlRef } from "../ContextStore";
 interface ToolsProps {
-    img?: string;
+    imgv?: any;
     svg?: JSX.Element;
     id?: string;
 }
@@ -10,29 +11,11 @@ interface ToolsProps {
  * @param id: string
  */
 //@ts-ignore
-const Tool = ({ img, svg, id }: ToolsProps) => {
-    //@ts-ignore
-    const dragStart = (e) => {
-        //@ts-ignore
-        const target = e.target;
-        //@ts-ignore
-        e.dataTransfer.setData("obj_id", target.id);
-        console.log(target.id);
-    };
-
-    //@ts-ignore
-    const dragOver = (e) => {
-        //@ts-ignore
-        e.stopPropagation();
-    };
-
+const Tool = ({ imgv, svg, id }: ToolsProps) => {
+    const dragUrl = useDragUrlRef();
     return (
         <>
             <Paper
-                id={id}
-                onDragStart={dragStart}
-                onDragOver={dragOver}
-                draggable={true}
                 sx={{
                     display: "flex",
                     width: "2em",
@@ -43,8 +26,17 @@ const Tool = ({ img, svg, id }: ToolsProps) => {
                     p: 2,
                 }}
             >
-                {img ? (
-                    <img src={img} alt="hat" width="100%" draggable="false" />
+                {imgv ? (
+                    <img
+                        src={imgv}
+                        alt="hat"
+                        width="100%"
+                        draggable="true"
+                        onDragStart={(e) => {
+                            //@ts-ignore
+                            dragUrl.current = e.target.src;
+                        }}
+                    />
                 ) : (
                     <>{svg}</>
                 )}
